@@ -4,12 +4,14 @@ public class ParkingTicket {
     private Vehicle parkedVehicle;
     private ParkingSpot parkingSpot;
     private LocalDateTime startTime;
+    private LocalDateTime endTime;
    
 
     public ParkingTicket(Vehicle parkedVehicle, ParkingSpot parkingSpot) {
         this.parkedVehicle = parkedVehicle;
         this.parkingSpot = parkingSpot;
-        this.startTime = LocalDateTime.now();
+        this.endTime = LocalDateTime.now();
+        this.startTime = parkedVehicle.getArrivalTime();
     }
 
     public Vehicle getParkedVehicle() {
@@ -22,6 +24,10 @@ public class ParkingTicket {
 
     public LocalDateTime getStartTime() {
         return startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime;
     }
 
     public long getDuration() {

@@ -37,11 +37,11 @@ public class Main {
         String vehicleType = scanner.next();
 
         Vehicle vehicle; 
-        if (vehicleType.equals("Car")){
+        if (vehicleType.equalsIgnoreCase("Car")){
             System.out.print("Enter the plate number: ");
             String plateNumber = scanner.next();
             vehicle = new Car(plateNumber);
-        } else if (vehicleType.equals("Truck")) {
+        } else if (vehicleType.equalsIgnoreCase("Truck")) {
             System.out.print("Enter the plate number: ");
             String plateNumber = scanner.next();
             vehicle = new Truck(plateNumber);
@@ -71,54 +71,53 @@ public class Main {
 
         scanner.close();
     }
-        
 
 
-        public static void removeVehicleAndPrintBill (Scanner scanner, ParkingLot parkingLot){
+    public static void removeVehicleAndPrintBill (Scanner scanner, ParkingLot parkingLot){
             
-            System.out.print("Enter the vehicle plate number to remove: ");
-            String plateNumber = scanner.next();
+        System.out.print("Enter the vehicle plate number to remove: ");
+        String plateNumber = scanner.next();
 
-            ArrayList<ParkingSpot> foundParkingSpots = parkingLot.findVehicleByPlateNumber(plateNumber);
+        ArrayList<ParkingSpot> foundParkingSpots = parkingLot.findVehicleByPlateNumber(plateNumber);
 
-            if (!foundParkingSpots.isEmpty()) {
-                System.out.println("Found the vehicle with plate number " + plateNumber + " in the following spots:");
-                for (ParkingSpot spot : foundParkingSpots) {
-                    System.out.println(spot.getSpotId());
-            }
-            System.out.print("Enter the spot ID from which you want to remove the vehicle: ");
-            String spotId = scanner.next();
+        if (!foundParkingSpots.isEmpty()) {
+            System.out.println("Found the vehicle with plate number " + plateNumber + " in the following spots:");
+            for (ParkingSpot spot : foundParkingSpots) {
+                System.out.println(spot.getSpotId());
+        }
+        System.out.print("Enter the spot ID from which you want to remove the vehicle: ");
+        String spotId = scanner.next();
 
-            ParkingSpot spotToRemove = parkingLot.findParkingSpotById(spotId);
+        ParkingSpot spotToRemove = parkingLot.findParkingSpotById(spotId);
 
-            if (spotToRemove != null && spotToRemove.getIsOccupied()) {
-                Vehicle removedVehicle = spotToRemove.removeVehicle();
-                if (removedVehicle != null) {
-                    ChargingStrategy chargingStrategy;
-                    if (removedVehicle instanceof Car) {
-                        chargingStrategy = new ChargingStrategy(DayOfWeek.MONDAY); 
-                    } else if (removedVehicle instanceof Truck) {
-                        chargingStrategy = new ChargingStrategy(DayOfWeek.MONDAY); 
-                    } else {
-                        System.out.println("Invalid vehicle type");
-                        return;
-                    }
-
-                    ParkingTicket ticket = new ParkingTicket(removedVehicle, spotToRemove);
-                    Bill bill = new Bill(ticket, chargingStrategy);
-                    System.out.println("Vehicle removed successfully.");
-                    System.out.println(bill);
+        if (spotToRemove != null && spotToRemove.getIsOccupied()) {
+            Vehicle removedVehicle = spotToRemove.removeVehicle();
+            if (removedVehicle != null) {
+                ChargingStrategy chargingStrategy;
+                if (removedVehicle instanceof Car) {
+                    chargingStrategy = new ChargingStrategy(DayOfWeek.MONDAY); 
+                } else if (removedVehicle instanceof Truck) {
+                    chargingStrategy = new ChargingStrategy(DayOfWeek.MONDAY); 
                 } else {
-                    System.out.println("Failed to remove vehicle.");
+                    System.out.println("Invalid vehicle type");
+                    return;
                 }
+
+                ParkingTicket ticket = new ParkingTicket(removedVehicle, spotToRemove);
+                Bill bill = new Bill(ticket, chargingStrategy);
+                System.out.println("Vehicle removed successfully.");
+                System.out.println(bill);
             } else {
-                System.out.println("Invalid spot ID or spot is not occupied");
+                System.out.println("Failed to remove vehicle.");
             }
         } else {
-            System.out.println("Vehicle with plate number " + plateNumber + " is not parked in any spot.");
+            System.out.println("Invalid spot ID or spot is not occupied");
         }
+    } else {
+        System.out.println("Vehicle with plate number " + plateNumber + " is not parked in any spot.");
+    }
 
-    }    
+}    
         
     }
     

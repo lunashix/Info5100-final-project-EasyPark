@@ -32,23 +32,23 @@ public class ChargingStrategy {
     }
 
     private double calculateCarCharge(Car car, long hoursParked) {
-        double chargeHoursParked =  calculateChargePerHour();
+        double chargeHoursParked =  calculateChargePerMin();
         return hoursParked * chargeHoursParked;
     }
 
     private double calculateTruckCharge(Truck truck, long hoursParked) {
-        double chargeHoursParked =  calculateChargePerHour();
+        double chargeHoursParked =  calculateChargePerMin();
         return hoursParked * chargeHoursParked * 1.5;
     }
 
 
-    private double calculateChargePerHour() {
-        double chargePerHour = 0;
+    private double calculateChargePerMin() {
+        double chargePerMin = 0;
         if (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
-            chargePerHour = 2; 
+            chargePerMin = 0.05; 
         } else {
-            chargePerHour = 5; 
+            chargePerMin = 0.08; 
         }
-        return chargePerHour;
+        return chargePerMin;
     }
 }
