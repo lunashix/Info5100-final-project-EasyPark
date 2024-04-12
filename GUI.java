@@ -208,17 +208,19 @@ public class GUI implements ActionListener, ItemListener {
 
         gbc.gridwidth = 2;
         gbc.gridheight = 1;
-
         gbc.fill = GridBagConstraints.VERTICAL;
+
         JLabel prompt = new JLabel("Please select number of each spot type: ");
         prompt.setFont(new Font("Arial", Font.BOLD, 16));
+        prompt.setBorder(BorderFactory.createEmptyBorder(0, 0, 30, 0));
+
         headerpanel.add(prompt, gbc);
 
         JLabel regularLabel = new JLabel("Regular spots: ");
         JLabel oversizedLabel = new JLabel("Oversized spots: ");
 
-        regularLabel.setBorder(BorderFactory.createEmptyBorder(30, 400, 0, 0));
-        oversizedLabel.setBorder(BorderFactory.createEmptyBorder(20, 400, 20, 0));
+        regularLabel.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 0));
+        oversizedLabel.setBorder(BorderFactory.createEmptyBorder(20, 50, 30, 0));
 
         String[] spotNumbersArray = new String[11];
         for (int i = 0; i <= 10; i++) {
@@ -228,8 +230,12 @@ public class GUI implements ActionListener, ItemListener {
         regularSpotNumBox = new JComboBox(spotNumbersArray);
         oversizedSpotNumBox = new JComboBox(spotNumbersArray);
 
-        regularSpotNumBox.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 400));
-        oversizedSpotNumBox.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 400));
+        // regularSpotNumBox.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 400));
+        // oversizedSpotNumBox.setBorder(BorderFactory.createEmptyBorder(20, 0, 20,
+        // 400));
+
+        regularSpotNumBox.setBorder(BorderFactory.createLineBorder(Color.white));
+        oversizedSpotNumBox.setBorder(BorderFactory.createLineBorder(Color.white));
 
         regularSpotNumBox.addItemListener(this);
         oversizedSpotNumBox.addItemListener(this);
