@@ -42,6 +42,8 @@ public class ParkingLot {
             if (parkedVehicle.getVehicleType() == spot.getSpotType()) {
                 spot.setIsOccupied(true);
                 spot.setParkedVehicle(parkedVehicle);
+                // getAllAvailableSpots().remove(spot);
+                // getOccupiedSpots().add(spot);
                 parkedVehicle.setArrivalTime(LocalDateTime.now());
                 return;
             }
@@ -54,17 +56,22 @@ public class ParkingLot {
         ParkingTicket ticket = new ParkingTicket(parkedVehicle, occupidSpot);
         occupidSpot.setIsOccupied(false);
         occupidSpot.setParkedVehicle(null);
+        // getOccupiedSpots().remove(occupidSpot);
+        // getAllAvailableSpots().add(occupidSpot);
+
         return ticket;
     }
 
     public ParkingTicket removeVehicleBySpotId(String spotId) {
         ParkingTicket ticket = null;
         for (ParkingSpot spot : getOccupiedSpots()) {
-            if (spot.getSpotId() == spotId) {
+            if (spot.getSpotId().equals(spotId)) {
                 Vehicle parkedVehicle = spot.getParkedVehicle();
                 ticket = new ParkingTicket(parkedVehicle, spot);
                 spot.setIsOccupied(false);
                 spot.setParkedVehicle(null);
+                // getOccupiedSpots().remove(spot);
+                // getAllAvailableSpots().add(spot);
                 break;
             }
         }

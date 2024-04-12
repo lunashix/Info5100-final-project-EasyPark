@@ -4,6 +4,7 @@ import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 import static java.awt.Image.SCALE_SMOOTH;
@@ -36,7 +37,6 @@ public class GUI implements ActionListener, ItemListener {
     }
 
     private void PrepareGUI() {
-      
 
         mainFrame = new JFrame("EasyPark Management System"); // Init new JFrame
         mainFrame.setSize(1000, 800);
@@ -49,30 +49,31 @@ public class GUI implements ActionListener, ItemListener {
             }
         });
 
-        // create a panel for the cover image 
+          // create a panel for the cover image 
 
-        JPanel coverPanel = new JPanel(new BorderLayout());
-        // Load the cover image
-        ImageIcon coverImageIcon = new ImageIcon("car.png"); 
-        Image coverImage = coverImageIcon.getImage().getScaledInstance(mainFrame.getWidth(), mainFrame.getHeight(), Image.SCALE_SMOOTH);
-        ImageIcon scaledCoverImageIcon = new ImageIcon(coverImage);
-        JLabel coverLabel = new JLabel(scaledCoverImageIcon);
-        coverPanel.add(coverLabel, BorderLayout.CENTER);
-
-        // Create a panel for the button and title
-        
-        JButton coverButton = new JButton("Get Started");
-
-        JLabel coverTitleLabel = new JLabel("Welcome to EasyPark!");
-        coverTitleLabel.setFont(new Font("Serif", Font.BOLD, 30));
-        coverTitleLabel.setBounds(380, 200, 300, 400); 
-        coverButton.setBounds(450, 500, 100, 40); 
-        coverLabel.add(coverButton); 
-        coverLabel.add(coverTitleLabel); 
-
-        // Add the cover panel to the main frame
-       
-        mainFrame.add(coverPanel, gbc);
+          JPanel coverPanel = new JPanel(new BorderLayout());
+          // Load the cover image
+          ImageIcon coverImageIcon = new ImageIcon("car.png"); 
+          Image coverImage = coverImageIcon.getImage().getScaledInstance(mainFrame.getWidth(), mainFrame.getHeight(), Image.SCALE_SMOOTH);
+          ImageIcon scaledCoverImageIcon = new ImageIcon(coverImage);
+          JLabel coverLabel = new JLabel(scaledCoverImageIcon);
+          coverPanel.add(coverLabel, BorderLayout.CENTER);
+  
+          // Create a panel for the button and title
+          
+          JButton coverButton = new JButton("Get Started");
+  
+          JLabel coverTitleLabel = new JLabel("Welcome to EasyPark!");
+          coverTitleLabel.setFont(new Font("Serif", Font.BOLD, 30));
+          coverTitleLabel.setBounds(380, 200, 300, 400); 
+          coverButton.setBounds(450, 500, 100, 40); 
+          coverLabel.add(coverButton); 
+          coverLabel.add(coverTitleLabel); 
+  
+          // Add the cover panel to the main frame
+         
+          mainFrame.add(coverPanel, gbc);
+  
 
         JPanel imagePanel = new JPanel(new BorderLayout()); // adding header panel containing image and text with 2
         JLabel picLabel = new JLabel(); // new label for icon in the header
@@ -108,7 +109,7 @@ public class GUI implements ActionListener, ItemListener {
         mainFrame.add(headerpanel, gbc); // add to main JFrame
         headerpanel.setVisible(false);
 
-        
+     
 
         String[] btnText = new String[] {
                 "Show All Parking Spots",
@@ -157,33 +158,31 @@ public class GUI implements ActionListener, ItemListener {
             }
         });
 
+        buttons[3].addActionListener(new parkCarActionListener());
 
-
-        buttons[6].addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showHomeScreen();
-            }
-        });
+        buttons[4].addActionListener(new removeCarActionListener());
+        buttons[5].addActionListener(new findCarActionListener());
         buttons[7].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 exitApp();
             }
         });
-        
+        buttons[6].addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showHomeScreen();
+            }
+        });
         gbc.gridheight = 2;
         gbc.gridy = 2;
         gbc.weighty = 1.0;
-
-       
 
         mainFrame.add(main, gbc);
         mainFrame.setVisible(true);
 
         main.setVisible(false);
-        
-        
+    
         coverButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -193,8 +192,9 @@ public class GUI implements ActionListener, ItemListener {
                 imagePanel.setVisible(true);
             }
         });
+
         initializeParkingLot();
-        
+
     }
 
     private void showHomeScreen() {
@@ -312,6 +312,8 @@ public class GUI implements ActionListener, ItemListener {
         confirmBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                regularSpotNumber = Integer.valueOf((String) regularSpotNumBox.getSelectedItem());
+                oversizedSpotNumber = Integer.valueOf((String) oversizedSpotNumBox.getSelectedItem());
                 initRegularSpots();
                 initOversizedSpots();
                 JOptionPane.showConfirmDialog(headerpanel,
@@ -336,44 +338,79 @@ public class GUI implements ActionListener, ItemListener {
     }
 
     private void initRegularSpots() {
-
+        headerpanel.removeAll();
         ArrayList<ParkingSpot> regularSpotList = parkingLot.getRegularSpotList();
         for (int i = 1; i <= regularSpotNumber; i++) {
             ParkingSpot spot = new ParkingSpot("R" + String.valueOf(i), ParkingType.REGULAR);
             regularSpotList.add(spot);
+            parkingLot.getAllSpots().add(spot);
         }
         regularPanel = new JPanel();
         regularPanel.setBackground(Color.WHITE);
         regularPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         regularSpotButtons = new ArrayList<>();
+        JButton newBtn = null;
         for (int i = 0; i < regularSpotNumber; i++) {
-            JButton newBtn = new JButton("R" + String.valueOf(i + 1));
+            ParkingSpot spot = parkingLot.getRegularSpotList().get(i);
+            if (spot.getIsOccupied()) {
+                newBtn = new JButton("<html>" + spot.getSpotId()
+                        + "<br> Occupied <br>"
+                        + spot.getParkedVehicle().getPlateNumber()
+                        + "<br>Arrival time: <br>"
+                        + spot.getParkedVehicle().getArrivalDate()
+                        + "<br>" + spot.getParkedVehicle().getArrivalTime().toString().substring(11, 19)
+                        + "</html>");
+            } else {
+                newBtn = new JButton(spot.getSpotId());
+            }
+
+            newBtn.setPreferredSize(new Dimension(110, 150));
             regularSpotButtons.add(newBtn);
-            gbc.gridx = i % 10;
-            gbc.gridy = i / 10;
+            gbc.gridx = i % 5;
+            gbc.gridy = i / 5;
             regularPanel.add(newBtn, gbc);
+
             newBtn.addActionListener(showPopupMenu(spotSubMenu));
         }
     }
 
     private void initOversizedSpots() {
+        headerpanel.removeAll();
+
         ArrayList<ParkingSpot> oversizedSpotList = parkingLot.getOversizedSpotList();
         for (int i = 1; i <= oversizedSpotNumber; i++) {
-            ParkingSpot spot = new ParkingSpot("C" + String.valueOf(i), ParkingType.OVERSIZED);
+            ParkingSpot spot = new ParkingSpot("O" + String.valueOf(i), ParkingType.OVERSIZED);
             oversizedSpotList.add(spot);
+            parkingLot.getAllSpots().add(spot);
+
         }
         oversizedPanel = new JPanel();
         oversizedPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         oversizedPanel.setBackground(Color.WHITE);
         oversizedSpotButtons = new ArrayList<>();
+        JButton newBtn = null;
         for (int i = 0; i < oversizedSpotNumber; i++) {
-            JButton newBtn = new JButton("C" + String.valueOf(i + 1));
+            ParkingSpot spot = parkingLot.getOversizedSpotList().get(i);
+            if (spot.getIsOccupied()) {
+                newBtn = new JButton("<html>" + spot.getSpotId()
+                        + "<br> Occupied <br>"
+                        + spot.getParkedVehicle().getPlateNumber()
+                        + "<br>Arrival time: <br>"
+                        + spot.getParkedVehicle().getArrivalDate()
+                        + "<br>" + spot.getParkedVehicle().getArrivalTime().toString().substring(11, 19)
+                        + "</html>");
+            } else {
+                newBtn = new JButton(spot.getSpotId());
+            }
+
+            newBtn.setPreferredSize(new Dimension(110, 150));
             oversizedSpotButtons.add(newBtn);
-            gbc.gridx = i % 10;
-            gbc.gridy = i / 10;
+            gbc.gridx = i % 5;
+            gbc.gridy = i / 5;
             oversizedPanel.add(newBtn, gbc);
+
             newBtn.addActionListener(showPopupMenu(spotSubMenu));
         }
 
@@ -431,6 +468,175 @@ public class GUI implements ActionListener, ItemListener {
         System.exit(0);
     }
 
+    public class parkCarActionListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JPanel panel = new JPanel();
+            panel.setLayout(new GridLayout(5, 2));
+
+            JLabel typeLabel = new JLabel("Select a vehicle type: ");
+            panel.add(typeLabel);
+
+            JRadioButton radio1 = new JRadioButton("Regular");
+            JRadioButton radio2 = new JRadioButton("Oversized");
+
+            ButtonGroup radios = new ButtonGroup();
+            radios.add(radio1);
+            radios.add(radio2);
+            panel.add(radio1);
+            panel.add(radio2);
+
+            JLabel plateLabel = new JLabel("Enter the plate number(eg. A12345): ");
+            panel.add(plateLabel);
+
+            JTextField plateField = new JTextField(20);
+            panel.add(plateField);
+
+            int result = JOptionPane.showOptionDialog(
+                    null,
+                    panel,
+                    null,
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    new String[] { "Confirm" },
+                    null);
+
+            if (result == JOptionPane.YES_OPTION) {
+                String vehiclePlateNumber = plateField.getText();
+                ParkingType vehicleType = radio1.isSelected() ? ParkingType.REGULAR : ParkingType.OVERSIZED;
+                Vehicle vehicleToPark = null;
+                if (vehicleType == ParkingType.REGULAR) {
+                    vehicleToPark = new Car(vehiclePlateNumber, vehicleType);
+                    parkingLot.parkVehicle(vehicleToPark);
+                    initRegularSpots();
+                    showAllParkingSpots();
+                } else {
+                    vehicleToPark = new Truck(vehiclePlateNumber, vehicleType);
+                    parkingLot.parkVehicle(vehicleToPark);
+                    initOversizedSpots();
+                    showAllParkingSpots();
+                    tabbedPane.setSelectedIndex(1);
+                }
+
+            }
+        }
+    }
+
+    public class findCarActionListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JPanel platePanel = new JPanel();
+            JLabel plateLabel = new JLabel("Enter the plate number(eg. A12345): ");
+            platePanel.add(plateLabel);
+            JTextField plateField = new JTextField(20);
+            platePanel.add(plateField);
+
+            int plateResult = JOptionPane.showOptionDialog(
+                    null,
+                    platePanel,
+                    null,
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    new String[] { "Confirm" },
+                    null);
+            String vehiclePlateNumber = plateField.getText();
+            if (plateResult == JOptionPane.YES_OPTION) {
+                ParkingSpot spotFound = parkingLot.findVehicleByPlateNumber(vehiclePlateNumber);
+                JOptionPane.showMessageDialog(null, "The vehicle is parked in spot " + spotFound.getSpotId());
+            }
+
+        }
+
+    }
+
+    public class removeCarActionListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JPanel panel = new JPanel();
+            panel.setLayout(new GridLayout(5, 2));
+
+            JLabel typeLabel = new JLabel("Select a method: ");
+            panel.add(typeLabel);
+
+            JRadioButton radio1 = new JRadioButton("By vehicle plate number");
+            JRadioButton radio2 = new JRadioButton("By parkng spot id");
+
+            ButtonGroup radios = new ButtonGroup();
+            radios.add(radio1);
+            radios.add(radio2);
+            panel.add(radio1);
+            panel.add(radio2);
+
+            int result = JOptionPane.showOptionDialog(
+                    null,
+                    panel,
+                    null,
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    new String[] { "Confirm" },
+                    null);
+
+            // by plate number
+            if (result == JOptionPane.YES_OPTION && radio1.isSelected()) {
+                JPanel platePanel = new JPanel();
+                JLabel plateLabel = new JLabel("Enter the plate number(eg. A12345): ");
+                platePanel.add(plateLabel);
+                JTextField plateField = new JTextField(20);
+                platePanel.add(plateField);
+
+                int plateResult = JOptionPane.showOptionDialog(
+                        null,
+                        platePanel,
+                        null,
+                        JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        new String[] { "Confirm" },
+                        null);
+                String vehiclePlateNumber = plateField.getText();
+                if (plateResult == JOptionPane.YES_OPTION) {
+
+                    ParkingTicket ticket = parkingLot.removeVehicleByPlateNumber(vehiclePlateNumber);
+                    initRegularSpots();
+                    initOversizedSpots();
+                    showAllParkingSpots();
+                }
+
+            } else if (result == JOptionPane.YES_OPTION && radio2.isSelected()) {
+                JPanel spotIdPanel = new JPanel();
+                JLabel spotIdLabel = new JLabel("Enter the spot id(eg. R1/O1): ");
+                spotIdPanel.add(spotIdLabel);
+                JTextField spotIdField = new JTextField(20);
+                spotIdPanel.add(spotIdField);
+                int spotIdResult = JOptionPane.showOptionDialog(
+                        null,
+                        spotIdPanel,
+                        null,
+                        JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        new String[] { "Confirm" },
+                        null);
+                String spotId = spotIdField.getText();
+                if (spotIdResult == JOptionPane.YES_OPTION) {
+
+                    // ParkingSpot spotToVacate = null;
+                    ParkingTicket ticket = parkingLot.removeVehicleBySpotId(spotId);
+                    initRegularSpots();
+                    initOversizedSpots();
+                    showAllParkingSpots();
+                    tabbedPane.setSelectedIndex(1);
+                }
+
+            }
+
+        }
+    }
+
     private ActionListener showPopupMenu(JPopupMenu spotMenu) {
 
         return new ActionListener() {
@@ -443,7 +649,6 @@ public class GUI implements ActionListener, ItemListener {
                     public void actionPerformed(ActionEvent ee) {
                         if (regularSpotButtons.contains((JButton) e.getSource())) {
                             regularSpotNumber--;
-                            // regularSpotButtons.remove((JButton) e.getSource());
                             initRegularSpots();
                             showAllParkingSpots();
                         } else if (oversizedSpotButtons.contains((JButton) e.getSource())) {
@@ -454,6 +659,13 @@ public class GUI implements ActionListener, ItemListener {
                         }
                     }
                 });
+
+                // parkcar
+                JMenuItem item2 = (JMenuItem) (spotMenu.getComponent(1));
+                item2.addActionListener(new parkCarActionListener());
+
+                JMenuItem item3 = (JMenuItem) (spotMenu.getComponent(2));
+                item3.addActionListener(new removeCarActionListener());
             }
         };
     }
@@ -633,6 +845,4 @@ public class GUI implements ActionListener, ItemListener {
         }
 
     }
-
-
 }
