@@ -1,11 +1,49 @@
 import java.time.LocalDateTime;
 import java.time.LocalDate;
+import java.util.Objects;
 
 public abstract class Vehicle {
-    private LocalDateTime arrivalTime;  // The time the vehicle arrived at the parking lot
+    private ParkingType vehicleType;
+    private String plateNumber;
+    private LocalDateTime arrivalTime; // The time the vehicle arrived at the parking lot
     private LocalDate arrivalDate;
+    private LocalDateTime exitTime; // The time the vehicle arrived at the parking lot
 
-    public Vehicle() {
+    public LocalDateTime getExitTime() {
+        return this.exitTime;
+    }
+
+    public void setExitTime(LocalDateTime exitTime) {
+        this.exitTime = exitTime;
+    }
+
+    public String getPlateNumber() {
+        return this.plateNumber;
+    }
+
+    public void setPlateNumber(String plateNumber) {
+        this.plateNumber = plateNumber;
+    }
+
+    public ParkingType getVehicleType() {
+        return this.vehicleType;
+    }
+
+    public void setVehicleType(ParkingType vehicleType) {
+        this.vehicleType = vehicleType;
+    }
+
+    public void setArrivalTime(LocalDateTime arrivalTime) {
+        this.arrivalTime = arrivalTime;
+    }
+
+    public void setArrivalDate(LocalDate arrivalDate) {
+        this.arrivalDate = arrivalDate;
+    }
+
+    public Vehicle(ParkingType vehicleType, String plateNumber) {
+        this.vehicleType = vehicleType;
+        this.plateNumber = plateNumber;
         arrivalTime = LocalDateTime.now();
         arrivalDate = LocalDate.now();
     }
@@ -26,7 +64,3 @@ public abstract class Vehicle {
         return "Date:" + arrivalDate;
     }
 }
-
-
-
-
