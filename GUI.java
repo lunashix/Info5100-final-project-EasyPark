@@ -36,9 +36,10 @@ public class GUI implements ActionListener, ItemListener {
     }
 
     private void PrepareGUI() {
+      
 
         mainFrame = new JFrame("EasyPark Management System"); // Init new JFrame
-        mainFrame.setSize(1000, 600);
+        mainFrame.setSize(1000, 800);
         mainFrame.setLayout(new GridBagLayout()); // JFrame is 3 rows 1 column
         GridBagConstraints gbc = new GridBagConstraints();
 
@@ -47,6 +48,31 @@ public class GUI implements ActionListener, ItemListener {
                 System.exit(0);
             }
         });
+
+        // create a panel for the cover image 
+
+        JPanel coverPanel = new JPanel(new BorderLayout());
+        // Load the cover image
+        ImageIcon coverImageIcon = new ImageIcon("car.png"); 
+        Image coverImage = coverImageIcon.getImage().getScaledInstance(mainFrame.getWidth(), mainFrame.getHeight(), Image.SCALE_SMOOTH);
+        ImageIcon scaledCoverImageIcon = new ImageIcon(coverImage);
+        JLabel coverLabel = new JLabel(scaledCoverImageIcon);
+        coverPanel.add(coverLabel, BorderLayout.CENTER);
+
+        // Create a panel for the button and title
+        
+        JButton coverButton = new JButton("Get Started");
+
+        JLabel coverTitleLabel = new JLabel("Welcome to EasyPark!");
+        coverTitleLabel.setFont(new Font("Serif", Font.BOLD, 30));
+        coverTitleLabel.setBounds(380, 200, 300, 400); 
+        coverButton.setBounds(450, 500, 100, 40); 
+        coverLabel.add(coverButton); 
+        coverLabel.add(coverTitleLabel); 
+
+        // Add the cover panel to the main frame
+       
+        mainFrame.add(coverPanel, gbc);
 
         JPanel imagePanel = new JPanel(new BorderLayout()); // adding header panel containing image and text with 2
         JLabel picLabel = new JLabel(); // new label for icon in the header
@@ -80,15 +106,16 @@ public class GUI implements ActionListener, ItemListener {
         gbc.weighty = 1.5;
 
         mainFrame.add(headerpanel, gbc); // add to main JFrame
+        headerpanel.setVisible(false);
 
-        initializeParkingLot();
+        
 
         String[] btnText = new String[] {
                 "Show All Parking Spots",
                 "Add Parking Spot",
                 "Delete Parking Spot",
                 "Park Car",
-                "Remove Car",
+                "Unpark Car",
                 "Find Car",
                 "Clear Screen",
                 "Exit Application",
@@ -130,25 +157,44 @@ public class GUI implements ActionListener, ItemListener {
             }
         });
 
-        buttons[7].addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                exitApp();
-            }
-        });
+
+
         buttons[6].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 showHomeScreen();
             }
         });
+        buttons[7].addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                exitApp();
+            }
+        });
+        
         gbc.gridheight = 2;
         gbc.gridy = 2;
         gbc.weighty = 1.0;
 
+       
+
         mainFrame.add(main, gbc);
         mainFrame.setVisible(true);
 
+        main.setVisible(false);
+        
+        
+        coverButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                coverPanel.setVisible(false);
+                main.setVisible(true);
+                headerpanel.setVisible(true);
+                imagePanel.setVisible(true);
+            }
+        });
+        initializeParkingLot();
+        
     }
 
     private void showHomeScreen() {
@@ -587,4 +633,6 @@ public class GUI implements ActionListener, ItemListener {
         }
 
     }
+
+
 }
