@@ -234,12 +234,6 @@ public class GUI implements ActionListener, ItemListener {
         spotMenu.add(item2);
         spotMenu.add(item3);
 
-        // spotMenu.add("Park vehicle").addActionListener(ee -> {
-        // park();
-        // });
-        // spotMenu.add("Unpark vehicle").addActionListener(ee -> {
-        // unpark();
-        // });
         spotMenu.setBorder(new LineBorder(Color.BLACK, 1));
         spotMenu.setPreferredSize(new Dimension(170, 80));
 
@@ -419,24 +413,13 @@ public class GUI implements ActionListener, ItemListener {
     public void showAllParkingSpots() {
         headerpanel.removeAll();
         tabbedPane = new JTabbedPane();
-        // for (int i = 0; i < regularSpotButtons.size(); i++) {
-        // regularPanel.add(regularSpotButtons.get(i));
-        // }
-        // for (int i = 0; i < regularSpotNumber; i++) {
-        // JButton newBtn = new JButton("R" + String.valueOf(i + 1));
-        // regularSpotButtons.add(newBtn);
-        //
-        // newBtn.addActionListener(showPopupMenu(spotSubMenu));
-        // }
+        
         JScrollPane regularScrollPane = new JScrollPane(regularPanel,
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         tabbedPane.addTab("Regular parking spots", regularScrollPane);
 
-        // for (int i = 0; i < oversizedSpotButtons.size(); i++) {
-        // oversizedPanel.add(oversizedSpotButtons.get(i));
-        // }
-
+      
         JScrollPane oversizedScrollPane = new JScrollPane(oversizedPanel,
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -455,13 +438,7 @@ public class GUI implements ActionListener, ItemListener {
         mainFrame.repaint();
         mainFrame.setVisible(true);
 
-        // for (ParkingSpot : parking.getRegularSpotList()) {
-        //
-        // }
-        //
-        // for (ParkingSpot : parking.getRegularSpotList()) {
-        //
-        // }
+     
     }
 
     private void exitApp() {
@@ -557,19 +534,19 @@ public class GUI implements ActionListener, ItemListener {
         public void actionPerformed(ActionEvent e) {
             JPanel panel = new JPanel();
             panel.setLayout(new GridLayout(5, 2));
-
+    
             JLabel typeLabel = new JLabel("Select a method: ");
             panel.add(typeLabel);
-
+    
             JRadioButton radio1 = new JRadioButton("By vehicle plate number");
-            JRadioButton radio2 = new JRadioButton("By parkng spot id");
-
+            JRadioButton radio2 = new JRadioButton("By parking spot id");
+    
             ButtonGroup radios = new ButtonGroup();
             radios.add(radio1);
             radios.add(radio2);
             panel.add(radio1);
             panel.add(radio2);
-
+    
             int result = JOptionPane.showOptionDialog(
                     null,
                     panel,
@@ -579,59 +556,48 @@ public class GUI implements ActionListener, ItemListener {
                     null,
                     new String[] { "Confirm" },
                     null);
-
-            // by plate number
+    
+            // By plate number
             if (result == JOptionPane.YES_OPTION && radio1.isSelected()) {
-                JPanel platePanel = new JPanel();
-                JLabel plateLabel = new JLabel("Enter the plate number(eg. A12345): ");
-                platePanel.add(plateLabel);
-                JTextField plateField = new JTextField(20);
-                platePanel.add(plateField);
-
-                int plateResult = JOptionPane.showOptionDialog(
-                        null,
-                        platePanel,
-                        null,
-                        JOptionPane.YES_NO_CANCEL_OPTION,
-                        JOptionPane.PLAIN_MESSAGE,
-                        null,
-                        new String[] { "Confirm" },
-                        null);
-                String vehiclePlateNumber = plateField.getText();
-                if (plateResult == JOptionPane.YES_OPTION) {
-
-                    ParkingTicket ticket = parkingLot.removeVehicleByPlateNumber(vehiclePlateNumber);
-                    initRegularSpots();
-                    initOversizedSpots();
-                    showAllParkingSpots();
+                String vehiclePlateNumber = JOptionPane.showInputDialog("Enter the plate number(eg. A12345): ");
+                if (vehiclePlateNumber != null && !vehiclePlateNumber.isEmpty()) {
+                    ParkingSpot spot = parkingLot.findVehicleByPlateNumber(vehiclePlateNumber);
+                    if (spot != null && spot.getIsOccupied()) {
+                        ParkingTicket ticket = parkingLot.removeVehicleByPlateNumber(vehiclePlateNumber);
+                            if (ticket != null) {
+                                initRegularSpots();
+                                initOversizedSpots();
+                                showAllParkingSpots();
+                               
+                            } else {
+                                JOptionPane.showMessageDialog(null, "Alert: No Car Found");
+                                return;
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Alert: This plate number is not found.");
+                        return;
                 }
-
-            } else if (result == JOptionPane.YES_OPTION && radio2.isSelected()) {
-                JPanel spotIdPanel = new JPanel();
-                JLabel spotIdLabel = new JLabel("Enter the spot id(eg. R1/O1): ");
-                spotIdPanel.add(spotIdLabel);
-                JTextField spotIdField = new JTextField(20);
-                spotIdPanel.add(spotIdField);
-                int spotIdResult = JOptionPane.showOptionDialog(
-                        null,
-                        spotIdPanel,
-                        null,
-                        JOptionPane.YES_NO_CANCEL_OPTION,
-                        JOptionPane.PLAIN_MESSAGE,
-                        null,
-                        new String[] { "Confirm" },
-                        null);
-                String spotId = spotIdField.getText();
-                if (spotIdResult == JOptionPane.YES_OPTION) {
-
-                    // ParkingSpot spotToVacate = null;
+            } else {
+                JOptionPane.showMessageDialog(null, "Error: No Car");
+            }
+        } else if (result == JOptionPane.YES_OPTION && radio2.isSelected()) {
+                String spotId = JOptionPane.showInputDialog("Enter the spot id(eg. R1/O1): ");
+                if (spotId != null && !spotId.isEmpty()) {
                     ParkingTicket ticket = parkingLot.removeVehicleBySpotId(spotId);
-                    initRegularSpots();
-                    initOversizedSpots();
-                    showAllParkingSpots();
-                    tabbedPane.setSelectedIndex(1);
+                    if (ticket != null) {
+                        initRegularSpots();
+                        initOversizedSpots();
+                        showAllParkingSpots();
+                        tabbedPane.setSelectedIndex(1);
+                        
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Alert: No Car Found");
+                        return;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Error: Please enter a valid spot ID");
                 }
-
+        
             }
 
         }
