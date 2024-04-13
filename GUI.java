@@ -1,4 +1,3 @@
-
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
@@ -469,37 +468,54 @@ public class GUI implements ActionListener, ItemListener {
             JTextField plateField = new JTextField(20);
             panel.add(plateField);
 
-            int result = JOptionPane.showOptionDialog(
-                    null,
-                    panel,
-                    null,
-                    JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.PLAIN_MESSAGE,
-                    null,
-                    new String[] { "Confirm" },
-                    null);
+            while (true) {
+                int result = JOptionPane.showOptionDialog(
+                        null,
+                        panel,
+                        null,
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        new String[] { "Confirm", "Cancel" },
+                        null);
 
-            if (result == JOptionPane.YES_OPTION) {
-                String vehiclePlateNumber = plateField.getText();
-                ParkingType vehicleType = radio1.isSelected() ? ParkingType.REGULAR : ParkingType.OVERSIZED;
-                Vehicle vehicleToPark = null;
-                if (vehicleType == ParkingType.REGULAR) {
-                    vehicleToPark = new Car(vehiclePlateNumber, vehicleType);
-                    parkingLot.parkVehicle(vehicleToPark);
-                    initRegularSpots();
-                    showAllParkingSpots();
+                if (!(radio1.isSelected() || radio2.isSelected()) && plateField.getText().isEmpty()) {
+                    break;
+                    // if (radio1.isSelected() || radio2.isSelected()) {
+                } else if ((radio1.isSelected() || radio2.isSelected()) && result == JOptionPane.YES_OPTION) {
+                    if (parkingLot.getAllAvailableSpots() == null) {
+                        JOptionPane.showMessageDialog(null, "No available spots.");
+                        break;
+                    } else if (plateField.getText().isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "Invalid plate number. Enter again.");
+                    }
+
+                    else if (!Character.isLetter(plateField.getText().charAt(0))) {
+                        JOptionPane.showMessageDialog(null, "Invalid plate number. Enter again.");
+                    } else {
+                        String vehiclePlateNumber = plateField.getText();
+                        ParkingType vehicleType = radio1.isSelected() ? ParkingType.REGULAR : ParkingType.OVERSIZED;
+                        Vehicle vehicleToPark = null;
+                        if (vehicleType == ParkingType.REGULAR) {
+                            vehicleToPark = new Car(vehiclePlateNumber, vehicleType);
+                            parkingLot.parkVehicle(vehicleToPark);
+                            initRegularSpots();
+                            showAllParkingSpots();
+                        } else {
+                            vehicleToPark = new Truck(vehiclePlateNumber, vehicleType);
+                            parkingLot.parkVehicle(vehicleToPark);
+                            initOversizedSpots();
+                            showAllParkingSpots();
+                            tabbedPane.setSelectedIndex(1);
+                        }
+                        break;
+                    }
                 } else {
-                    vehicleToPark = new Truck(vehiclePlateNumber, vehicleType);
-                    parkingLot.parkVehicle(vehicleToPark);
-                    initOversizedSpots();
-                    showAllParkingSpots();
-                    tabbedPane.setSelectedIndex(1);
+                    break;
                 }
-
             }
         }
     }
-
     public class findCarActionListener implements ActionListener {
 
         @Override
@@ -510,21 +526,34 @@ public class GUI implements ActionListener, ItemListener {
             JTextField plateField = new JTextField(20);
             platePanel.add(plateField);
 
-            int plateResult = JOptionPane.showOptionDialog(
-                    null,
-                    platePanel,
-                    null,
-                    JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.PLAIN_MESSAGE,
-                    null,
-                    new String[] { "Confirm" },
-                    null);
-            String vehiclePlateNumber = plateField.getText();
-            if (plateResult == JOptionPane.YES_OPTION) {
-                ParkingSpot spotFound = parkingLot.findVehicleByPlateNumber(vehiclePlateNumber);
-                JOptionPane.showMessageDialog(null, "The vehicle is parked in spot " + spotFound.getSpotId());
-            }
+            while (true) {
+                int plateResult = JOptionPane.showOptionDialog(
+                        null,
+                        platePanel,
+                        null,
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        new String[] { "Confirm", "Cancel" },
+                        null);
 
+                if (plateResult == JOptionPane.YES_OPTION && Character.isLetter(plateField.getText().charAt(0))) {
+                    String vehiclePlateNumber = plateField.getText();
+                    ParkingSpot spotFound = parkingLot.findVehicleByPlateNumber(vehiclePlateNumber);
+                    if (spotFound != null) {
+                        JOptionPane.showMessageDialog(null, "The vehicle is parked in spot " + spotFound.getSpotId());
+                        break;
+
+                    } else {
+                        JOptionPane.showMessageDialog(null, "The plate number does not exist. Enter again.");
+                    }
+                } else if (plateResult == JOptionPane.YES_OPTION) {
+                    JOptionPane.showMessageDialog(null, " Invalid plate number. Enter again.");
+                } else {
+                    break;
+                }
+
+            }
         }
 
     }
